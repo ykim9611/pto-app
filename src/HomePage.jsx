@@ -30,13 +30,13 @@ function HomePage() {
         </h3>
         <div id={styles.hoursButtonsContainer}>
           <button
-            class={styles.hoursButton}
+            className={styles.hoursButton}
             onClick={() => navigate(`/user/${userId}/sick`)}
           >
             Sick Hours
           </button>
           <button
-            class={styles.hoursButton}
+            className={styles.hoursButton}
             onClick={() => navigate(`/user/${userId}/pto`)}
           >
             PTO Hours

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { db } from './firebase-config';
 import { collection, getDocs } from 'firebase/firestore';
 import HoursRecordRow from './HoursRecordRow';
-import styles from './PtoHoursPage.module.css';
+import styles from './HoursPage.module.css';
 
 function PtoHoursPage() {
   const { userId } = useParams();
@@ -11,7 +11,7 @@ function PtoHoursPage() {
   const [ptoHours, setPtoHours] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    const getPtoHoursRef = collection(db, 'users', userId, 'ptoHours');
+    const getPtoHoursRef = collection(db, 'users', userId, 'hours');
     const getPtoHours = async () => {
       const ptoHoursData = await getDocs(getPtoHoursRef);
       const ptoHoursArray = ptoHoursData.docs.map((doc) => ({
@@ -19,15 +19,15 @@ function PtoHoursPage() {
         id: doc.id,
       }));
       setPtoHours(ptoHoursArray);
-      // setTimeout(() => {
-      //   setLoading(false);
-      // }, 1000);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
     };
     getPtoHours();
   }, [userId]);
 
   return (
-    <div id={styles.ptoHoursContainer}>
+    <div id={styles.hoursContainer}>
       <button
         id={styles.backButton}
         onClick={() => {
@@ -48,7 +48,7 @@ function PtoHoursPage() {
         </div>
       ) : (
         ptoHours.map((ptoHour) => (
-          <HoursRecordRow key={ptoHour.id} hour={ptoHour} />
+          <HoursRecordRow key={ptoHour.id} hour={ptoHour} hourType='pto' />
         ))
       )}
     </div>
