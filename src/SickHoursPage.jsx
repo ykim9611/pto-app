@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { db } from './firebase-config';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import HoursRecordRow from './HoursRecordRow';
 import styles from './HoursPage.module.css';
 
@@ -12,13 +12,17 @@ function SickHoursPage() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const getSickHoursRef = collection(db, 'users', userId, 'hours');
+    const sortedSickHoursSnapshot = query(
+      getSickHoursRef,
+      orderBy('accruedDate', 'desc')
+    );
     const getSickHours = async () => {
-      const ptoHoursData = await getDocs(getSickHoursRef);
-      const ptoHoursArray = ptoHoursData.docs.map((doc) => ({
+      const sickHoursData = await getDocs(sortedSickHoursSnapshot);
+      const sickHoursArray = sickHoursData.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      setSickHours(ptoHoursArray);
+      setSickHours(sickHoursArray);
       setTimeout(() => {
         setLoading(false);
       }, 1000);

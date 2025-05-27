@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { db } from './firebase-config';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import HoursRecordRow from './HoursRecordRow';
 import styles from './HoursPage.module.css';
 
@@ -12,8 +12,12 @@ function PtoHoursPage() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const getPtoHoursRef = collection(db, 'users', userId, 'hours');
+    const sortedPtoHoursSnapshot = query(
+      getPtoHoursRef,
+      orderBy('accruedDate', 'desc')
+    );
     const getPtoHours = async () => {
-      const ptoHoursData = await getDocs(getPtoHoursRef);
+      const ptoHoursData = await getDocs(sortedPtoHoursSnapshot);
       const ptoHoursArray = ptoHoursData.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
