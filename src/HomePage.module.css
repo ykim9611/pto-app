@@ -31,3 +31,15 @@ h3 {
   background-color: blue;
   color: white;
 }
+
+#imageContainer {
+  display: flex;
+  width: 100%;
+  min-height: 800px;
+  align-items: center;
+  justify-content: center;
+}
+
+#loadingTruck {
+  width: 150px;
+}
