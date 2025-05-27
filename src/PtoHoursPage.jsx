@@ -1,44 +1,58 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { db } from './firebase-config';
-import { collection, getDocs, Timestamp } from 'firebase/firestore';
-import './PtoHoursPage.css'
+import { collection, getDocs } from 'firebase/firestore';
+import HoursRecordRow from './HoursRecordRow';
+import styles from './PtoHoursPage.module.css';
 
 function PtoHoursPage() {
-  const {userId} = useParams();
+  const { userId } = useParams();
   const navigate = useNavigate();
   const [ptoHours, setPtoHours] = useState([]);
-  useEffect(()=> {
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
     const getPtoHoursRef = collection(db, 'users', userId, 'ptoHours');
-    const getPtoHours = async ()=> {
+    const getPtoHours = async () => {
       const ptoHoursData = await getDocs(getPtoHoursRef);
-      const ptoHoursArray = ptoHoursData.docs.map(doc => ({
+      const ptoHoursArray = ptoHoursData.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      console.log(ptoHoursArray)
       setPtoHours(ptoHoursArray);
-    }
+      // setTimeout(() => {
+      //   setLoading(false);
+      // }, 1000);
+    };
     getPtoHours();
-  }, [userId])
+  }, [userId]);
 
   return (
-    <div>
-      <button onClick={() => {navigate(`/user/${userId}`)}}>Back</button>
-      <div>PtoPage</div>
-      {ptoHours.map(ptoHour => {
-        let convertedTimestamp = new Timestamp(ptoHour.date.seconds, ptoHour.date.nanoseconds);
-        let date = convertedTimestamp.toDate().toLocaleDateString();
-        return (
-          <div className="pto-row" key={ptoHour.id}>
-            <div>Date: {date}</div>
-            <div>Accrued Hours: {ptoHour.accruedHours}</div>
-            <div>Total Hours: {ptoHour.totalHours}</div>
-          </div>
-        )
-      })}
+    <div id={styles.ptoHoursContainer}>
+      <button
+        id={styles.backButton}
+        onClick={() => {
+          navigate(`/user/${userId}`);
+        }}
+      >
+        Back
+      </button>
+
+      <h2 id={styles.title}>PTO Hours</h2>
+      {loading ? (
+        <div id={styles.imageContainer}>
+          <img
+            id={styles.loadingTruck}
+            src='/loadingTruck.gif'
+            alt='loadingTruck'
+          />
+        </div>
+      ) : (
+        ptoHours.map((ptoHour) => (
+          <HoursRecordRow key={ptoHour.id} hour={ptoHour} />
+        ))
+      )}
     </div>
-  )
+  );
 }
 
-export default PtoHoursPage
+export default PtoHoursPage;
